@@ -1,9 +1,19 @@
+# Inspired by https://github.com/Miou-zora/Raylib-Zig-Nix
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
-    zig-overlay.url = "github:mitchellh/zig-overlay";
+
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+
+    flake-utils = {
+      url = "github:numtide/flake-utils";
+    };
+
+    zig-overlay = {
+      url = "github:mitchellh/zig-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
+
   outputs = { self, nixpkgs, flake-utils, zig-overlay }:
     flake-utils.lib.eachSystem [ "x86_64-linux" ] (system:
       let
@@ -17,6 +27,7 @@
           name = "name_of_your_project";
           packages = with pkgs; [
             raylib
+            patchelf
           ];
           nativeBuildInputs = [
             zigPackage
