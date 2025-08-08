@@ -39,6 +39,12 @@ pub fn build(b: *std.Build) void {
     exe.addCSourceFiles(.{
         .root = b.path("src/"),
         .files = &.{"main.c"},
+        .flags = &.{
+            "-Wall",
+            "-Werror",
+            "-O2",
+            "-std=c23",
+        },
     });
 
     // Dependencies
