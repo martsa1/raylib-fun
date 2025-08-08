@@ -2,7 +2,7 @@
 #include "stdio.h"
 
 #define X_SIZE 3
-#define Y_SIZE 3
+#define Y_SIZE 4
 #define INVALID_MOVE_INDICATOR_TIME 0.3
 
 typedef struct {
@@ -16,7 +16,7 @@ typedef struct {
   float false_move;
 } CharState;
 
-typedef int MAP[X_SIZE][Y_SIZE];
+typedef int MAP[Y_SIZE][X_SIZE];
 
 int can_move(Pos target_pos, const MAP *map) {
   if (target_pos.y >= Y_SIZE) {
@@ -32,7 +32,7 @@ int can_move(Pos target_pos, const MAP *map) {
     return 0;
   }
 
-  if ((*map)[target_pos.x][target_pos.y] == 1) {
+  if ((*map)[target_pos.y][target_pos.x] == 1) {
     return 0;
   }
 
@@ -49,9 +49,11 @@ int main() {
 
   // X, _, _
   // _, X, _
-  // X, _, _
+  // _, X, _
+  // _, _, _
   MAP map = {
-      {1, 0, 1},
+      {1, 0, 0},
+      {0, 1, 0},
       {0, 1, 0},
       {0, 0, 0},
   };
@@ -73,7 +75,7 @@ int main() {
     for (int x = 0; x < X_SIZE; x++) {
       for (int y = 0; y < Y_SIZE; y++) {
         DrawRectangle(x * rect_width, y * rect_height, rect_width, rect_height,
-                      map[x][y] == 1 ? BLACK : RAYWHITE);
+                      map[y][x] == 1 ? BLACK : RAYWHITE);
       }
     }
 
