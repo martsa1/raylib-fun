@@ -17,7 +17,8 @@ class Pos:
 MAP: MapT = [
     [1, 0, 0],
     [0, 1, 0],
-    [0, 1, 0],
+    # [0, 1, 0],
+    [0, 0, 0],
     [0, 0, 0],
 ]
 
@@ -52,11 +53,6 @@ def find_neighbours(cur_pos: Pos, map: MapT) -> t.Iterator[Pos]:
     for c in cardinals:
         if not can_move(c, map):
             continue
-
-        if cur_pos.previous:
-            if cur_pos.previous.x == c.x and cur_pos.previous.y == c.y:
-                continue
-
         yield c
 
 
@@ -64,6 +60,7 @@ def main() -> None:
     iter = 0
 
     to_visit = [START]
+    visited: dict[tuple[int, int], Pos] = {}
     # visited = []
     print("   x: 0, 1, 2")
     for x in range(len(MAP)):
@@ -74,17 +71,33 @@ def main() -> None:
             raise Exception("something fucked up...")
 
         next = to_visit.pop()
-        # if next in visited:
-        #     print(f"Skipping already visited {next}")
-        #     continue
         if next.x == END.x and next.y == END.y:
             print(f"Destination reached: {next}")
             break
 
         print(f"visiting {next}")
         for neighbour in find_neighbours(next, MAP):
-            to_visit.append(neighbour)
-        # visited.append(next)
+            neighbour_pos = neighbour.x, neighbour.y
+            if neighbour_pos not in visited:
+                to_visit.append(neighbour)
+            # Don't revisit neighbours if we've been there before for less distance.
+            elif visited[neighbour_pos].dist > neighbour.dist:
+                    to_visit.append(neighbour)
+            else:
+                print(f"Skipping neighbour: {neighbour_pos} for distance {neighbour.dist}, already visited for dist: {visited[neighbour_pos].dist}")
+
+
+        pos = (next.x, next.y)
+        if pos not in visited:
+            print(f"Storing entry for new pos {pos}")
+            visited[pos] = next
+            continue
+        if next.dist < visited[pos].dist:
+            print(f"Found new path to {pos} for dist {next.dist} (prev. {visited[pos].dist})")
+            visited[pos] = next
+            continue
+        else:
+            print(f"not updating {pos}, already found a shorter route.")
 
     path = [next]
     while True:
@@ -98,10 +111,6 @@ def main() -> None:
 
     for i in path:
         print(f"{i.x, i.y}")
-
-
-
-
 
 
 if __name__ == "__main__":
